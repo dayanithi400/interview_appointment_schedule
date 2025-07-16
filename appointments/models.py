@@ -1,6 +1,7 @@
 # appointments/models.py
 from django.db import models
 from django.core.validators import FileExtensionValidator
+from django.contrib.auth.models import User
 
 class Candidate(models.Model):
     name = models.CharField(max_length=100)
@@ -40,3 +41,10 @@ class Appointment(models.Model):
 
     def __str__(self):
         return f"{self.candidate.name} - {self.job_role} on {self.date} at {self.time_slot}"
+    
+class Recruiter(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    password = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.user.username

@@ -1,0 +1,53 @@
+{% extends "appointments/base.html" %}
+
+{% block content %}
+<div class="p-4 max-w-4xl mx-auto">
+    <a href="{% url 'recruiter_dashboard' %}" class="text-blue-600 hover:underline mb-4 inline-block">
+        &larr; Back to dashboard
+    </a>
+    
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">{{ candidate.name }}</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h2 class="text-xl font-semibold mb-2">Contact Information</h2>
+                <p><span class="font-medium">Email:</span> {{ candidate.email }}</p>
+                <p><span class="font-medium">Phone:</span> {{ candidate.phone }}</p>
+                
+                <h2 class="text-xl font-semibold mt-4 mb-2">Skills</h2>
+                <p>{{ candidate.skills }}</p>
+            </div>
+            
+            <div>
+                <h2 class="text-xl font-semibold mb-2">Education</h2>
+                <p>{{ candidate.education }}</p>
+                
+                <h2 class="text-xl font-semibold mt-4 mb-2">Experience</h2>
+                <p>{{ candidate.experience }}</p>
+            </div>
+        </div>
+        
+        <div class="mt-6">
+            <h2 class="text-xl font-semibold mb-2">Scheduled Interviews</h2>
+            {% for appointment in appointments %}
+            <div class="mb-2 p-3 bg-gray-50 rounded">
+                <p><span class="font-medium">Role:</span> {{ appointment.job_role }}</p>
+                <p><span class="font-medium">When:</span> {{ appointment.date }} at {{ appointment.get_time_slot_display }}</p>
+                <p><span class="font-medium">Status:</span> {% if appointment.is_active %}Active{% else %}Cancelled{% endif %}</p>
+            </div>
+            {% empty %}
+            <p>No interviews scheduled</p>
+            {% endfor %}
+        </div>
+        
+        <div class="mt-6">
+            <a href="{{ candidate.resume.url }}" 
+               class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+               download>
+                Download Resume
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

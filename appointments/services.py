@@ -17,7 +17,7 @@ def extract_resume_info(file_path):
     llm = ChatOpenAI(
         model_name="mistralai/mistral-7b-instruct",
         openai_api_base="https://openrouter.ai/api/v1",
-        openai_api_key="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",
+        openai_api_key=os.getenv("OPENROUTER_API_KEY"),
         max_tokens=2000,
     )
     
