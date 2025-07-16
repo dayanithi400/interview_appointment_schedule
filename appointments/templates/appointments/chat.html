@@ -1,0 +1,269 @@
+{% extends "appointments/base.html" %}
+
+{% block content %}
+<div class="p-4">
+    <!-- Chat container -->
+    <div class="h-[500px] overflow-y-auto mb-4 border rounded-lg p-4 bg-gray-50">
+        <!-- Welcome message -->
+        {% if action == 'welcome' %}
+            {% include "appointments/partials/response.html" with text="Hello! I'm your interview scheduling assistant. How can I help you today?" %}
+            
+            {% include "appointments/partials/response.html" with text="Please select an option:" options=options %}
+        {% endif %}
+        
+        <!-- Book appointment form -->
+        {% if action == 'book' %}
+            {% include "appointments/partials/response.html" with text="Let's schedule your interview. Please provide the following details:" %}
+            
+            <form method="post" enctype="multipart/form-data" class="mt-4">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="book">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Job Role*</label>
+                        <input type="text" name="job_role" required
+                               class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               value="{{ form.job_role.value|default_if_none:'' }}">
+                        {% if form.job_role.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.job_role.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date*</label>
+                        <input type="date" name="date" required
+                               class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               value="{{ form.date.value|default_if_none:'' }}">
+                        {% if form.date.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Time Slot*</label>
+                        <select name="time_slot" required
+                                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select a time slot</option>
+                            {% for value, display in form.fields.time_slot.choices %}
+                                <option value="{{ value }}" {% if form.time_slot.value == value %}selected{% endif %}>
+                                    {{ display }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.time_slot.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.time_slot.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Resume (PDF)*</label>
+                        <input type="file" name="resume" accept=".pdf" required 
+                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        {% if form.resume.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.resume.errors.0 }}</p>
+                        {% endif %}
+                        <p class="mt-1 text-sm text-gray-500">Upload your resume in PDF format</p>
+                    </div>
+                    
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                        Submit
+                    </button>
+                </div>
+            </form>
+        {% endif %}
+        
+        <!-- Update appointment form -->
+        {% if action == 'update' %}
+            {% include "appointments/partials/response.html" with text="To update your appointment, please provide the following details:" %}
+            
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email*</label>
+                        <input type="email" name="email" required
+                               class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               value="{{ form.email.value|default_if_none:'' }}">
+                        {% if form.email.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Current Appointment Date*</label>
+                        <input type="date" name="date" required
+                               class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               value="{{ form.date.value|default_if_none:'' }}">
+                        {% if form.date.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">New Time Slot*</label>
+                        <select name="new_time_slot" required
+                                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select a new time slot</option>
+                            {% for value, display in form.fields.new_time_slot.choices %}
+                                <option value="{{ value }}" {% if form.new_time_slot.value == value %}selected{% endif %}>
+                                    {{ display }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.new_time_slot.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.new_time_slot.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                        Update Appointment
+                    </button>
+                </div>
+            </form>
+        {% endif %}
+        
+        <!-- Cancel appointment form -->
+        {% if action == 'cancel' %}
+            {% include "appointments/partials/response.html" with text="To cancel your appointment, please provide the following details:" %}
+            
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="cancel">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email*</label>
+                        <input type="email" name="email" required
+                               class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               value="{{ form.email.value|default_if_none:'' }}">
+                        {% if form.email.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Appointment Date*</label>
+                        <input type="date" name="date" required
+                               class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               value="{{ form.date.value|default_if_none:'' }}">
+                        {% if form.date.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Time Slot*</label>
+                        <select name="time_slot" required
+                                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select your current time slot</option>
+                            {% for value, display in form.fields.time_slot.choices %}
+                                <option value="{{ value }}" {% if form.time_slot.value == value %}selected{% endif %}>
+                                    {{ display }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.time_slot.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.time_slot.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                        Cancel Appointment
+                    </button>
+                </div>
+            </form>
+        {% endif %}
+        
+        <!-- Admit card form -->
+        {% if action == 'admit_card' %}
+            {% include "appointments/partials/response.html" with text="To download your admit card, please provide the following details:" %}
+            
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="admit_card">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email*</label>
+                        <input type="email" name="email" required
+                               class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               value="{{ form.email.value|default_if_none:'' }}">
+                        {% if form.email.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Appointment Date*</label>
+                        <input type="date" name="date" required
+                               class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                               value="{{ form.date.value|default_if_none:'' }}">
+                        {% if form.date.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Time Slot*</label>
+                        <select name="time_slot" required
+                                class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select your time slot</option>
+                            {% for value, display in form.fields.time_slot.choices %}
+                                <option value="{{ value }}" {% if form.time_slot.value == value %}selected{% endif %}>
+                                    {{ display }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.time_slot.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.time_slot.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
+                        Download Admit Card
+                    </button>
+                </div>
+            </form>
+        {% endif %}
+        
+        <!-- Display messages -->
+        {% if messages %}
+            <div class="mt-4">
+                {% for message in messages %}
+                    <div class="p-3 mb-2 rounded-md 
+                                {% if message.tags == 'error' %}bg-red-100 text-red-800
+                                {% else %}bg-green-100 text-green-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function setAction(action) {
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = '';
+        
+        const csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.name = 'csrfmiddlewaretoken';
+        csrf.value = '{{ csrf_token }}';
+        form.appendChild(csrf);
+        
+        const actionInput = document.createElement('input');
+        actionInput.type = 'hidden';
+        actionInput.name = 'action';
+        actionInput.value = action;
+        form.appendChild(actionInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+{% endblock %}

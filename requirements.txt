@@ -1,0 +1,7 @@
+Django==4.2.7
+langchain==0.0.346
+openrouter==1.0.0
+langchain-community==0.0.8
+reportlab==4.0.4
+python-dotenv==1.0.0
+PyPDF2==3.0.1
